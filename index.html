@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Sapa AJAX dan PHP</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #333;
+        }
+        .card {
+            width: 100%;
+            max-width: 440px;
+            background: #fff;
+            padding: 32px 28px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        h1 { text-align: center; font-size: 24px; margin: 0 0 28px; }
+        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: #555; }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        input[type="text"]:focus { outline: none; border-color: #007bff; }
+        .btn-wrap { text-align: center; margin: 16px 0 8px; }
+        button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 9px 22px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover { background: #0062cc; }
+        h2 { text-align: center; font-size: 18px; margin: 16px 0 12px; }
+        #response {
+            padding: 12px 14px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #e3e3e3;
+            background: #f8f8f8;
+        }
+        #response.success { background: #e6fbe9; border-color: #a6e3b0; color: #1e7e34; }
+        #response.error { background: #fde4e4; border-color: #f2a2a2; color: #c62828; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Form Sapa Menggunakan AJAX dan PHP</h1>
+
+        <label for="nama">Masukkan Nama Anda:</label>
+        <input type="text" id="nama" placeholder="Contoh: Alex" autocomplete="off">
+
+        <div class="btn-wrap">
+            <button type="button" id="btnKirim">Kirim</button>
+        </div>
+
+        <h2>Respon Server:</h2>
+        <div id="response">Menunggu input...</div>
+    </div>
+
+    <script>
+        const inputNama = document.getElementById('nama');
+        const btnKirim = document.getElementById('btnKirim');
+        const responseBox = document.getElementById('response');
+
+        function kirimNama() {
+            const data = new URLSearchParams();
+            data.append('nama', inputNama.value);
+
+            fetch('server.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: data
+            })
+                .then(function (res) {
+                    return res.text().then(function (teks) {
+                        return { ok: res.ok, teks: teks };
+                    });
+                })
+                .then(function (hasil) {
+                    responseBox.textContent = hasil.teks;
+                    responseBox.className = hasil.ok ? 'success' : 'error';
+                })
+                .catch(function () {
+                    responseBox.textContent = 'Terjadi kesalahan saat menghubungi server.';
+                    responseBox.className = 'error';
+                });
+        }
+
+        btnKirim.addEventListener('click', kirimNama);
+        inputNama.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') kirimNama();
+        });
+    </script>
+</body>
+</html>
